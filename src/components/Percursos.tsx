@@ -1,0 +1,34 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Reveal from "./Reveal";
+import { EVENTO, formatBRL } from "@/lib/event";
+import { IcCheck, IcArrow, IcMedal, IcBolt, IcShirt, IcStar, IcRoute, IcPin } from "./Icons";
+
+type Stats = { "4km": number };
+
+function RouteMap() {
+  return <div><svg viewBox="0 0 500 190" className="h-full w-full" aria-hidden>
+    {[35,70,105,140,175].map((y) => <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="rgba(245,247,251,.05)" strokeWidth=".7" />)}
+    {[50,100,150,200,250,300,350,400,450].map((x) => <line key={x} x1={x} y1="0" x2={x} y2="190" stroke="rgba(245,247,251,.04)" strokeWidth=".7" />)}
+    <path d="M62 133 C68 53 162 28 248 46 C346 67 443 45 440 112 C438 169 332 168 254 145 C175 122 107 185 62 133 Z" fill="none" stroke="url(#routeBlue)" strokeWidth="4" className="route-dash" />
+    <defs><linearGradient id="routeBlue" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#5cacff" /><stop offset="100%" stopColor="#006BDF" /></linearGradient></defs>
+    {[[248,46],[440,112],[254,145]].map(([cx,cy],i) => <circle key={i} cx={cx} cy={cy} r="5" fill="#080808" stroke="#80bcff" strokeWidth="2" />)}
+    <circle cx="62" cy="133" r="12" fill="none" stroke="rgba(0,107,223,.55)" strokeWidth="2" className="pulse-dot" /><circle cx="62" cy="133" r="6" fill="#006BDF" />
+  </svg><div className="mt-2 flex items-center gap-4"><span className="flex items-center gap-1.5 font-data text-[9px] uppercase tracking-[0.2em] text-mut"><span className="h-2 w-2 rounded-full bg-gold" /> Largada / Meta</span><span className="flex items-center gap-1.5 font-data text-[9px] uppercase tracking-[0.2em] text-mut"><span className="h-2 w-2 rounded-full border border-[#80bcff] bg-ink2" /> Apoio no trajeto</span></div></div>;
+}
+
+export default function Percursos({ stats }: { stats: Stats }) {
+  const [flash, setFlash] = useState(false);
+  useEffect(() => { const handler = () => { setFlash(true); setTimeout(() => setFlash(false), 1600); }; window.addEventListener("select-prova", handler); return () => window.removeEventListener("select-prova", handler); }, []);
+  const choose = () => { window.dispatchEvent(new CustomEvent("select-prova", { detail: "4km" })); document.getElementById("inscricao")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); };
+  return <section id="percurso" className="relative border-t border-hair bg-ink2/40"><div className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full bg-gold/10 blur-[110px]" /><div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-32">
+    <Reveal><div className="flex items-center gap-4"><span className="font-data text-xs tracking-[0.4em] text-gold">02</span><span className="h-px flex-1 bg-hair" /><span className="font-data text-[10px] uppercase tracking-[0.34em] text-mut">Percurso</span></div><div className="mt-6 flex flex-col justify-between gap-6 lg:flex-row lg:items-end"><h2 className="max-w-2xl font-display text-4xl leading-[1.04] sm:text-5xl" style={{ fontWeight: 800 }}>Uma distância.<br /><span className="gold-grad-text">Todo o seu ritmo.</span></h2><p className="max-w-sm text-sm leading-relaxed text-mut">Quatro quilômetros para você viver a experiência completa: sair em frente à InforsService, encontrar a sua passada e celebrar a chegada.</p></div></Reveal>
+    <Reveal delay={110}><article className={`group panel relative mt-14 overflow-hidden border-gold/45 transition-all duration-500 ${flash ? "shadow-[0_0_65px_-12px_rgba(0,107,223,.75)]" : "shadow-[0_30px_80px_-40px_rgba(0,107,223,.4)]"}`}><div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent" /><div className="grid lg:grid-cols-[.92fr_1.08fr]">
+      <div className="relative min-h-[300px] overflow-hidden"><img src="/images/hero.jpg" alt="Atletas em uma corrida de rua" className="h-full w-full object-cover grayscale-[20%] transition-transform duration-[1200ms] group-hover:scale-[1.07]" /><div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" /><span className="absolute left-6 top-6 rounded-full bg-[#006BDF] px-4 py-1.5 font-data text-[10px] font-700 uppercase tracking-[0.28em] text-white" style={{ fontWeight: 700 }}>Percurso único</span><div className="absolute bottom-6 left-6"><span className="block font-data text-[10px] uppercase tracking-[0.3em] text-ivory/70">1º lote</span><span className="font-display text-4xl gold-grad-text" style={{ fontWeight: 800 }}>{formatBRL(EVENTO.precoLote1)}</span></div></div>
+      <div className="flex flex-col gap-7 p-7 sm:p-9"><div className="flex flex-wrap items-end justify-between gap-5"><div className="flex items-end gap-3"><span className="gold-grad-text font-display leading-none" style={{ fontWeight: 900, fontSize: "clamp(4.5rem,9vw,6.5rem)" }}>4</span><span className="mb-3 font-display text-xl text-ivory/80" style={{ fontWeight: 700 }}>km</span></div><p className="max-w-xs text-right text-[13px] leading-relaxed text-mut">Do ponto de partida à sua melhor chegada. Um desafio acessível, vibrante e feito para todos.</p></div><div className="rounded-2xl border border-hair bg-black/65 p-4"><div className="h-40 sm:h-44"><RouteMap /></div></div><ul className="grid gap-x-6 gap-y-3 sm:grid-cols-2">{["Percurso único de 4 km","Camiseta oficial da corrida","Medalha com nome gravado","Caneta e squeeze a laser","Café da manhã + mingau","Água e premiação no final"].map((f) => <li key={f} className="flex items-center gap-2.5 text-[13px] text-ivory/80"><IcCheck className="h-4 w-4 shrink-0 text-gold" />{f}</li>)}</ul><div className="mt-auto flex flex-col gap-5 border-t border-hair pt-5 sm:flex-row sm:items-center sm:justify-between"><span className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-xl border border-gold/40 bg-gold/10 text-gold"><IcUsersMini /></span><span><span className="block font-data text-[10px] uppercase tracking-[.22em] text-mut">Atletas confirmados</span><strong className="font-display text-xl text-ivory" style={{ fontWeight: 700 }}>{stats["4km"].toLocaleString("pt-BR")}</strong></span></span><button className="btn-gold text-sm" onClick={choose}>Inscrever-me no 4 km <IcArrow className="h-4 w-4" /></button></div></div>
+    </div></article></Reveal>
+    <Reveal delay={180}><div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-3">{[{icon:IcShirt,t:"Camisa oficial"},{icon:IcBolt,t:"Gravação personalizada"},{icon:IcMedal,t:"Medalha de chegada"},{icon:IcStar,t:"Premiação por categoria"}].map((x) => <span key={x.t} className="flex items-center gap-2.5 font-data text-[10px] uppercase tracking-[0.26em] text-mut"><x.icon className="h-4.5 w-4.5 text-gold" />{x.t}</span>)}</div></Reveal>
+  </div></section>;
+}
+function IcUsersMini(){return <IcRoute className="h-4.5 w-4.5" />}
